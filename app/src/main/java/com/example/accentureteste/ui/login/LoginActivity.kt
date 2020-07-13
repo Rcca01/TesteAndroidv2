@@ -1,6 +1,7 @@
 package com.example.accentureteste.ui.login
 
 import android.app.Activity
+import android.content.Context
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -21,19 +22,29 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var loginViewModel: LoginViewModel
 
+    lateinit var username: EditText
+    lateinit var password: EditText
+    lateinit var login: Button
+    lateinit var loading: ProgressBar
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_login)
-
-        val username = findViewById<EditText>(R.id.username)
-        val password = findViewById<EditText>(R.id.password)
-        val login = findViewById<Button>(R.id.login)
-        val loading = findViewById<ProgressBar>(R.id.loading)
+        this.username = findViewById(R.id.username)
+        this.password = findViewById(R.id.password)
+        this.login = findViewById(R.id.login)
+        this.loading = findViewById(R.id.loading)
 
         loginViewModel = ViewModelProviders.of(this, LoginViewModelFactory())
                 .get(LoginViewModel::class.java)
 
+        this.setConfigInputsLogin()
+        this.observeStatusLogin()
+        this.observeResultLogin()
+    }
+
+    private fun observeStatusLogin() {
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
 
@@ -47,7 +58,9 @@ class LoginActivity : AppCompatActivity() {
                 password.error = getString(loginState.passwordError)
             }
         })
+    }
 
+    private fun observeResultLogin() {
         loginViewModel.loginResult.observe(this@LoginActivity, Observer {
             val loginResult = it ?: return@Observer
 
@@ -56,6 +69,7 @@ class LoginActivity : AppCompatActivity() {
                 showLoginFailed(loginResult.error)
             }
             if (loginResult.success != null) {
+                this.saveDataLogin(loginResult)
                 updateUiWithUser(loginResult.success)
             }
             setResult(Activity.RESULT_OK)
@@ -63,19 +77,31 @@ class LoginActivity : AppCompatActivity() {
             //Complete and destroy login activity once successful
             finish()
         })
+    }
 
+    private fun saveDataLogin(loginResult: LoginResult) {
+        loginResult.success?.let {
+            val sharedPreferences = this.getSharedPreferences("login", Context.MODE_PRIVATE)
+            val editSharedPreferences = sharedPreferences.edit()
+            editSharedPreferences.putString("user", it.user)
+            editSharedPreferences.putString("password", it.password)
+            editSharedPreferences.apply()
+        }
+    }
+
+    private fun setConfigInputsLogin() {
         username.afterTextChanged {
             loginViewModel.loginDataChanged(
-                    username.text.toString(),
-                    password.text.toString()
+                username.text.toString(),
+                password.text.toString()
             )
         }
 
         password.apply {
             afterTextChanged {
                 loginViewModel.loginDataChanged(
-                        username.text.toString(),
-                        password.text.toString()
+                    username.text.toString(),
+                    password.text.toString()
                 )
             }
 
@@ -83,8 +109,8 @@ class LoginActivity : AppCompatActivity() {
                 when (actionId) {
                     EditorInfo.IME_ACTION_DONE ->
                         loginViewModel.login(
-                                username.text.toString(),
-                                password.text.toString()
+                            username.text.toString(),
+                            password.text.toString()
                         )
                 }
                 false
