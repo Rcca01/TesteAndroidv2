@@ -42,6 +42,13 @@ class LoginActivity : AppCompatActivity() {
         this.setConfigInputsLogin()
         this.observeStatusLogin()
         this.observeResultLogin()
+        this.setValuesInput()
+    }
+
+    private fun setValuesInput() {
+        val sharedPreferences = this.getSharedPreferences("login", Context.MODE_PRIVATE)
+        this.username.setText(sharedPreferences.getString("user", ""))
+        this.password.setText(sharedPreferences.getString("password", ""))
     }
 
     private fun observeStatusLogin() {
