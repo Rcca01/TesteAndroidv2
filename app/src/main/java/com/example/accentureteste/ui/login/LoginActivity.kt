@@ -1,7 +1,6 @@
 package com.example.accentureteste.ui.login
 
-import android.app.Activity
-import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -17,6 +16,7 @@ import android.widget.ProgressBar
 import android.widget.Toast
 
 import com.example.accentureteste.R
+import com.example.accentureteste.ui.statements.StatementsActivity
 
 class LoginActivity : AppCompatActivity() {
 
@@ -42,14 +42,14 @@ class LoginActivity : AppCompatActivity() {
         this.setConfigInputsLogin()
         this.observeStatusLogin()
         this.observeResultLogin()
-        this.setValuesInput()
+        //this.setValuesInput()
     }
 
-    private fun setValuesInput() {
+    /*private fun setValuesInput() {
         val sharedPreferences = this.getSharedPreferences("login", Context.MODE_PRIVATE)
         this.username.setText(sharedPreferences.getString("user", ""))
         this.password.setText(sharedPreferences.getString("password", ""))
-    }
+    }*/
 
     private fun observeStatusLogin() {
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
@@ -75,26 +75,23 @@ class LoginActivity : AppCompatActivity() {
             if (loginResult.error != null) {
                 showLoginFailed(loginResult.error)
             }
-            if (loginResult.success != null) {
-                this.saveDataLogin(loginResult)
-                updateUiWithUser(loginResult.success)
+            loginResult.success?.let { userAccount ->
+                val intent = Intent(this, StatementsActivity::class.java)
+                val bundle = Bundle()
+                bundle.putParcelable("user", loginResult.success)
+                intent.putExtra("USER_ACCOUNT", bundle)
+                startActivity(intent)
             }
-            setResult(Activity.RESULT_OK)
-
-            //Complete and destroy login activity once successful
-            finish()
         })
     }
 
-    private fun saveDataLogin(loginResult: LoginResult) {
-        loginResult.success?.let {
-            val sharedPreferences = this.getSharedPreferences("login", Context.MODE_PRIVATE)
-            val editSharedPreferences = sharedPreferences.edit()
-            editSharedPreferences.putString("user", it.user)
-            editSharedPreferences.putString("password", it.password)
-            editSharedPreferences.apply()
-        }
-    }
+    /*private fun saveDataLogin(userAccount: UserAccount) {
+        val sharedPreferences = this.getSharedPreferences("login", Context.MODE_PRIVATE)
+        val editSharedPreferences = sharedPreferences.edit()
+        editSharedPreferences.putString("user", userAccount.)
+        editSharedPreferences.putString("password", it.password)
+        editSharedPreferences.apply()
+    }*/
 
     private fun setConfigInputsLogin() {
         username.afterTextChanged {
@@ -128,17 +125,6 @@ class LoginActivity : AppCompatActivity() {
                 loginViewModel.login(username.text.toString(), password.text.toString())
             }
         }
-    }
-
-    private fun updateUiWithUser(model: LoggedInUserView) {
-        val welcome = getString(R.string.welcome)
-        val displayName = model.displayName
-        // TODO : initiate successful logged in experience
-        Toast.makeText(
-                applicationContext,
-                "$welcome $displayName",
-                Toast.LENGTH_LONG
-        ).show()
     }
 
     private fun showLoginFailed(@StringRes errorString: Int) {
