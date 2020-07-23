@@ -1,5 +1,6 @@
 package com.example.accentureteste.ui.login
 
+import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -42,14 +43,14 @@ class LoginActivity : AppCompatActivity() {
         this.setConfigInputsLogin()
         this.observeStatusLogin()
         this.observeResultLogin()
-        //this.setValuesInput()
+        this.setValuesInput()
     }
 
-    /*private fun setValuesInput() {
-        val sharedPreferences = this.getSharedPreferences("login", Context.MODE_PRIVATE)
+    private fun setValuesInput() {
+        val sharedPreferences = this.getSharedPreferences("loginBank", Context.MODE_PRIVATE)
         this.username.setText(sharedPreferences.getString("user", ""))
         this.password.setText(sharedPreferences.getString("password", ""))
-    }*/
+    }
 
     private fun observeStatusLogin() {
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
@@ -80,18 +81,19 @@ class LoginActivity : AppCompatActivity() {
                 val bundle = Bundle()
                 bundle.putParcelable("user", loginResult.success)
                 intent.putExtra("USER_ACCOUNT", bundle)
+                this.saveDataLogin(username.text.toString(), password.text.toString())
                 startActivity(intent)
             }
         })
     }
 
-    /*private fun saveDataLogin(userAccount: UserAccount) {
-        val sharedPreferences = this.getSharedPreferences("login", Context.MODE_PRIVATE)
+    private fun saveDataLogin(username: String, password: String) {
+        val sharedPreferences = this.getSharedPreferences("loginBank", Context.MODE_PRIVATE)
         val editSharedPreferences = sharedPreferences.edit()
-        editSharedPreferences.putString("user", userAccount.)
-        editSharedPreferences.putString("password", it.password)
+        editSharedPreferences.putString("user", username)
+        editSharedPreferences.putString("password", password)
         editSharedPreferences.apply()
-    }*/
+    }
 
     private fun setConfigInputsLogin() {
         username.afterTextChanged {

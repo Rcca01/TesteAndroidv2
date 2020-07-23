@@ -2,9 +2,6 @@ package com.example.accentureteste.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.accentureteste.data.LoginDataSource
-import com.example.accentureteste.data.LoginRepository
-import com.example.accentureteste.retrofit.BankHttpApi
 
 /**
  * ViewModel provider factory to instantiate LoginViewModel.
