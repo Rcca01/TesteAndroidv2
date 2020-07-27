@@ -19,4 +19,8 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="conta">Conta</string>
+    <string name="saldo">Saldo</string>
+    <string name="recentes">Recentes</string>
+    <string name="pagamento">Pagamento</string>
 </resources>

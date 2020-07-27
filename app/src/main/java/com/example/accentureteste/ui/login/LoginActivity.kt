@@ -76,7 +76,7 @@ class LoginActivity : AppCompatActivity() {
             if (loginResult.error != null) {
                 showLoginFailed(loginResult.error)
             }
-            loginResult.success?.let { userAccount ->
+            loginResult.success?.let {
                 val intent = Intent(this, StatementsActivity::class.java)
                 val bundle = Bundle()
                 bundle.putParcelable("user", loginResult.success)
